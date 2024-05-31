@@ -1,0 +1,61 @@
+import cv2
+import numpy as np
+
+def load_image(image_path):
+    """
+    Load the image from the specified path.
+    """
+    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    if image is None:
+        raise ValueError("Image not found or unable to load.")
+    return image
+
+def preprocess_image(image):
+    """
+    Preprocess the image to enhance edges and contours.
+    """
+    # Apply Gaussian Blur
+    blurred = cv2.GaussianBlur(image, (5, 5), 0)
+    
+    # Edge detection using Canny
+    edges = cv2.Canny(blurred, 50, 150, apertureSize=3)
+    
+    return edges
+
+def find_contours(edges):
+    """
+    Find contours in the edge-detected image.
+    """
+    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    return contours
+
+def generate_floor_plan(contours, image_shape):
+    """
+    Generate a floor plan from the contours.
+    """
+    floor_plan = np.zeros(image_shape, dtype=np.uint8)
+    
+    # Draw contours on the floor plan
+    cv2.drawContours(floor_plan, contours, -1, (255, 255, 255), 2)
+    
+    return floor_plan
+
+def save_image(image, path):
+    """
+    Save the image to the specified path.
+    """
+    cv2.imwrite(path, image)
+
+def main(image_path, output_path):
+    image = load_image(image_path)
+    edges = preprocess_image(image)
+    contours = find_contours(edges)
+    floor_plan = generate_floor_plan(contours, image.shape)
+    save_image(floor_plan, output_path)
+    print(f"Floor plan saved to {output_path}")
+
+# Example usage
+if __name__ == "__main__":
+    image_path = "3d_plan2.jpeg"
+    output_path = "2d_plan2.png"
+    main(image_path, output_path)
