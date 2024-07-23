@@ -1,3 +1,3 @@
 # Assignments
 
-Assigments of the different comapnies that I receive.
+Assigments of the different companies that I applied for.
